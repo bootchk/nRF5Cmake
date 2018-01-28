@@ -1,18 +1,24 @@
 
 # macros that define lists of source files
 
+# These append to two lists:
+#    SDK_SOURCES_STARTUP :  usually only in an executable (main)
+#    SDK_SOURCES : in an executable or a library
+# This is different design from original cmake-nrf5x scripts
+
 
 
 
 # Startup files
+# !!! Not appending to same list as other macros
 macro(nRF5SDKSourcesStartup)
     if (NRF_TARGET MATCHES "nrf51")
-	list(APPEND SDK_SOURCES
+	list(APPEND SDK_SOURCES_STARTUP
                 "${NRF5_SDK_PATH}/components/toolchain/system_nrf51.c"
                 "${NRF5_SDK_PATH}/components/toolchain/gcc/gcc_startup_nrf51.S"
                 )
     elseif (NRF_TARGET MATCHES "nrf52")
-        list(APPEND SDK_SOURCES
+        list(APPEND SDK_SOURCES_STARTUP
                 "${NRF5_SDK_PATH}/components/toolchain/system_nrf52.c"
                 "${NRF5_SDK_PATH}/components/toolchain/gcc/gcc_startup_nrf52.S"
                 )
@@ -86,10 +92,10 @@ endmacro()
 
 
 
-# Basic i.e. required for most builds
+# Basic i.e. required for most builds with SoftDevice
 # e.g. when Softdevice and SD compatible drivers used
+# !!! Not nRF5SDKSourcesStartup(), you must invoke that macro separately and add SDK_SOURCES_STARTUP to target_sources
 macro(nRF5SetSDKSourcesBasic)
-    nRF5SDKSourcesStartup()
     nRF5SDKSourcesSDH()
     nRF5SDKSourcesDrivers()
     nRF5SDKSourcesUtils()

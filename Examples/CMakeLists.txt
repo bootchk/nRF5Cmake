@@ -32,12 +32,16 @@ nRF5SetIncludePaths()
 # according to what you are building (library, or minimal executable, or BLE executable, or multiprotocol)
 nRF5SetSDKSourcesBasic()
 
+# Define SDK_SOURCES_STARTUP
+nRF5SDKSourcesStartup()
+
 add_executable(Foo "")
 
 target_sources(Foo
    PUBLIC
       main.cpp
       "${SDK_SOURCES}"
+      "${SDK_SOURCES_STARTUP}"
    )
 
 nRF5GenerateOtherArtifacts(Foo)
