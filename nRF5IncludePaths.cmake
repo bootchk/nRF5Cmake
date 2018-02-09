@@ -56,7 +56,10 @@ macro(nRF5SetIncludePaths)
                 "${NRF5_SDK_PATH}/components/softdevice/s130/headers/nrf51"
         )
     else()
-        message("Missing NRF_SOFTDEVICE config var")
+        message("No NRF_SOFTDEVICE, include path to soc_nosd ")
+        include_directories(
+                "${NRF5_SDK_PATH}/components/drivers_nrf/nrf_soc_nosd"
+        )
     endif()
 
 endmacro()
