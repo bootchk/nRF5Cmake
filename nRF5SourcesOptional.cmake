@@ -24,13 +24,14 @@ endmacro(nRF5x_addNRF_LOG)
 
 # adds Segger RTT
 # sdk_config.h>NRF_LOG_BACKEND_RTT_ENABLED
+# in SDK 14, name change from RTT_Syscalls_GCC.c to SEGGER_....
 macro(nRF5x_addRTT)
     include_directories(
             "${NRF5_SDK_PATH}/external/segger_rtt"
     )
     
     list(APPEND SDK_SOURCES
-            "${NRF5_SDK_PATH}/external/segger_rtt/RTT_Syscalls_GCC.c"
+            "${NRF5_SDK_PATH}/external/segger_rtt/SEGGER_RTT_Syscalls_GCC.c"
             "${NRF5_SDK_PATH}/external/segger_rtt/SEGGER_RTT.c"
             "${NRF5_SDK_PATH}/external/segger_rtt/SEGGER_RTT_printf.c"
             )
