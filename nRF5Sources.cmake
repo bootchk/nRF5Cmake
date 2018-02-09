@@ -22,6 +22,8 @@ macro(nRF5SDKSourcesStartup)
                 "${NRF5_SDK_PATH}/components/toolchain/system_nrf52.c"
                 "${NRF5_SDK_PATH}/components/toolchain/gcc/gcc_startup_nrf52.S"
                 )
+    else ()
+         message("No startup files.")
     endif()
 endmacro()
 
