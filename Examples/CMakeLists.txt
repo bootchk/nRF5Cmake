@@ -44,6 +44,8 @@ target_sources(Foo
       "${SDK_SOURCES_STARTUP}"
    )
 
+nRF5SetSoftdeviceIncludePaths(Foo "s132")
+
 nRF5GenerateOtherArtifacts(Foo)
 nRF5AddCustomTargets(Foo)
 

@@ -1,4 +1,7 @@
 
+
+# Set include_directories that are not specific to a softdevice or device family
+
 macro(nRF5SetIncludePaths)
     # basic board definitions and drivers
     include_directories(
@@ -45,21 +48,44 @@ macro(nRF5SetIncludePaths)
             "${NRF5_SDK_PATH}/components/softdevice/common"
     )
 
-    if (NRF_SOFTDEVICE MATCHES "s132")
-        include_directories(
+endmacro()
+
+
+
+
+
+# Set target_include_directories that ARE specific to a softdevice
+
+# !!! Uses target_include_directories i.e. target is a parameter.
+# Must be invoked AFTER target is declared
+
+# This encapsulates knowledge of the SDK dir structure, which could change
+
+macro(nRF5SetSoftdeviceIncludePaths TARGET SOFTDEVICE )
+message("SOFTDEVICE is ${SOFTDEVICE} ")
+if (${SOFTDEVICE} MATCHES "s132")
+        target_include_directories( ${TARGET} PUBLIC
                 "${NRF5_SDK_PATH}/components/softdevice/s132/headers"
                 "${NRF5_SDK_PATH}/components/softdevice/s132/headers/nrf52"
         )
-    elseif (NRF_SOFTDEVICE MATCHES "s130")
-         include_directories(
+    elseif (SOFTDEVICE MATCHES "s112")
+         target_include_directories( TARGET
+                "${NRF5_SDK_PATH}/components/softdevice/s112/headers"
+                "${NRF5_SDK_PATH}/components/softdevice/s112/headers/nrf52"
+        )
+    elseif (SOFTDEVICE MATCHES "s130")
+         target_include_directories( TARGET
                 "${NRF5_SDK_PATH}/components/softdevice/s130/headers"
                 "${NRF5_SDK_PATH}/components/softdevice/s130/headers/nrf51"
         )
     else()
-        message("No NRF_SOFTDEVICE, include path to soc_nosd ")
-        include_directories(
+        message("No SOFTDEVICE defined, include path to soc_nosd ")
+        target_include_directories( TARGET
                 "${NRF5_SDK_PATH}/components/drivers_nrf/nrf_soc_nosd"
         )
     endif()
-
 endmacro()
+
+
+
+
