@@ -18,13 +18,13 @@ if (NOT NRFJPROG)
 endif ()
 
 
-# check if the nRF target has been set
-if (NRF_TARGET MATCHES "nrf51")
+# check nRF target has been set
+if (NRF_FAMILY MATCHES "nrf51")
 
-elseif (NRF_TARGET MATCHES "nrf52")
+elseif (NRF_FAMILY MATCHES "nrf52")
 
-elseif (NOT NRF_TARGET)
-    message(FATAL_ERROR "nRF target must be defined")
+elseif (NOT NRF_FAMILY)
+    message(FATAL_ERROR "NRF_FAMILY must be defined to nrf51 or nrf52")
 else ()
     message(FATAL_ERROR "Only nRF51 and rRF52 boards are supported right now")
 endif ()

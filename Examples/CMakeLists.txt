@@ -20,9 +20,12 @@ include("nRF5")
 # TODO fix this
 
 # vars that configure scripts
-set(NRF_TARGET "nrf52")
-set(NRF_SOFTDEVICE "s132")
-# TODO version of SD
+set(NRF_FAMILY "nrf52")
+
+set(SOFTDEVICE "s132")
+set(CHIP "52832")
+
+set(NRF5_LINKER_SCRIPT "${CMAKE_SOURCE_DIR}/gcc_nrf52.ld")
 
 nRF5CheckSetupPreconditions()
 nRF5SetBuildOptions()
@@ -36,6 +39,11 @@ nRF5SetSDKSourcesBasic()
 nRF5SDKSourcesStartup()
 
 add_executable(Foo "")
+
+# Set paths and other definitions ON the executable target
+nRF5SetSoftdeviceIncludePaths( "Foo" ${SOFTDEVICE})
+nRF5SetSoftdeviceDefinitions( "Foo" ${SOFTDEVICE})
+nRF5SetChipCompileDefinitions( "Foo" ${CHIP})
 
 target_sources(Foo
    PUBLIC

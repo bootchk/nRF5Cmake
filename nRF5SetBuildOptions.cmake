@@ -3,6 +3,11 @@
 # set compiler options, definitions, and linker flags etc.
 # This should have only that purpose, and not to list source files or include paths
 
+# Family is nrf51 or nrf52
+# Chip is nrf52832 or nrf52810,  chips for nrf51 family incomplete
+# Softdevice is s112 or s132, others incomplete
+
+
 
 #Obsolete but kept as documentation of the original
 # Instead use: nRF5SetChipDefinitions(), nRF5SetTargetCompileOptions(), and nRF5SetSoftdeviceDefinitions
@@ -64,15 +69,19 @@ endmacro()
 
 # !!! The result is a single string, not a list of strings
 
-function(nRF5SetFamilyCPUFlags VAR FAMILY )
+function(nRF5SetChipCPUFlags VAR CHIP )
     
-    if (${FAMILY} MATCHES "nrf51")
+    if (${CHIP} MATCHES "nrf51")
         set( RESULT 
              "-mcpu=cortex-m0 -mfloat-abi=soft"
         )
-    elseif (${FAMILY} MATCHES "nrf52")
+    elseif (${CHIP} MATCHES "nrf52832")
         set( RESULT 
                 "-mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16"
+        )
+    elseif (${CHIP} MATCHES "nrf52810")
+        set( RESULT 
+                "-mcpu=cortex-m4 -mfloat-abi=soft"
         )
     else()
         message("No compiler options specific to family: ${FAMILY}. ")
@@ -80,7 +89,7 @@ function(nRF5SetFamilyCPUFlags VAR FAMILY )
 
     # This is not sufficient, since linker also needs flags: target_compile_options( ${TARGET} PUBLIC ${RESULT} )
     set(${VAR} "${RESULT}" PARENT_SCOPE)    # Set the named variable in caller's scope
-    message("CPU_FLAGS specific to family ${FAMILY}: ${RESULT}")
+    message("CPU_FLAGS specific to chip ${CHIP}: ${RESULT}")
 endfunction()
 
 
@@ -104,7 +113,7 @@ macro(nRF5SetBuildOptions)
     set(CMAKE_CXX_COMPILER "${ARM_NONE_EABI_TOOLCHAIN_PATH}/bin/arm-none-eabi-c++")
     set(CMAKE_ASM_COMPILER "${ARM_NONE_EABI_TOOLCHAIN_PATH}/bin/arm-none-eabi-gcc")
 
-    nRF5SetFamilyCPUFlags(CPU_FLAGS ${NRF_TARGET})
+    nRF5SetChipCPUFlags(CPU_FLAGS ${CHIP})
 
     set(COMMON_FLAGS "-MP -MD -mthumb -mabi=aapcs -Wall -Werror -O3 -g3 -ffunction-sections -fdata-sections -fno-strict-aliasing -fno-builtin --short-enums ${CPU_FLAGS}")
 

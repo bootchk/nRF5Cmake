@@ -32,26 +32,31 @@ endmacro()
 #  softdevice (distributed in binary)
 #  erase
 
+# Using family unknown is slower but reduces complexity of scripts and increases robustness
+# nrfjprog has no command to return the chip model number
+# for "-f unknown" nrfjprog determinines the chip
+
 macro(nRF5AddCustomTargets EXECUTABLE_NAME)
 
+    set(FAMILY_STRING "-f unknown")
 
     add_custom_target("FLASH_${EXECUTABLE_NAME}" ALL
-            COMMAND ${NRFJPROG} --program ${EXECUTABLE_NAME}.hex -f ${NRF_TARGET} --sectorerase
+            COMMAND ${NRFJPROG} --program ${EXECUTABLE_NAME}.hex ${FAMILY_STRING} --sectorerase
             COMMAND sleep 0.5s
-            COMMAND ${NRFJPROG} --reset -f ${NRF_TARGET}
+            COMMAND ${NRFJPROG} --reset ${FAMILY_STRING}
             DEPENDS ${EXECUTABLE_NAME}
             COMMENT "flashing ${EXECUTABLE_NAME}.hex"
             )
 
    add_custom_target(FLASH_SOFTDEVICE ALL
-            COMMAND ${NRFJPROG} --program ${SOFTDEVICE_PATH} -f ${NRF_TARGET} --sectorerase
+            COMMAND ${NRFJPROG} --program ${SOFTDEVICE_PATH} -f unknown --sectorerase
             COMMAND sleep 0.5s
-            COMMAND ${NRFJPROG} --reset -f ${NRF_TARGET}
+            COMMAND ${NRFJPROG} --reset ${FAMILY_STRING}
             COMMENT "flashing SoftDevice"
             )
 
     add_custom_target(FLASH_ERASE ALL
-            COMMAND ${NRFJPROG} --eraseall -f ${NRF_TARGET}
+            COMMAND ${NRFJPROG} --eraseall ${FAMILY_STRING}
             COMMENT "erasing flashing"
             )
 

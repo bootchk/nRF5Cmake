@@ -12,12 +12,12 @@
 # Startup files
 # !!! Not appending to same list as other macros
 macro(nRF5SDKSourcesStartup)
-    if (NRF_TARGET MATCHES "nrf51")
+    if (NRF_FAMILY MATCHES "nrf51")
 	list(APPEND SDK_SOURCES_STARTUP
                 "${NRF5_SDK_PATH}/components/toolchain/system_nrf51.c"
                 "${NRF5_SDK_PATH}/components/toolchain/gcc/gcc_startup_nrf51.S"
                 )
-    elseif (NRF_TARGET MATCHES "nrf52")
+    elseif (NRF_FAMILY MATCHES "nrf52")
         list(APPEND SDK_SOURCES_STARTUP
                 "${NRF5_SDK_PATH}/components/toolchain/system_nrf52.c"
                 "${NRF5_SDK_PATH}/components/toolchain/gcc/gcc_startup_nrf52.S"

@@ -69,18 +69,18 @@ if (${SOFTDEVICE} MATCHES "s132")
                 "${NRF5_SDK_PATH}/components/softdevice/s132/headers/nrf52"
         )
     elseif (SOFTDEVICE MATCHES "s112")
-         target_include_directories( TARGET
+         target_include_directories( ${TARGET} PUBLIC
                 "${NRF5_SDK_PATH}/components/softdevice/s112/headers"
                 "${NRF5_SDK_PATH}/components/softdevice/s112/headers/nrf52"
         )
     elseif (SOFTDEVICE MATCHES "s130")
-         target_include_directories( TARGET
+         target_include_directories( ${TARGET} PUBLIC
                 "${NRF5_SDK_PATH}/components/softdevice/s130/headers"
                 "${NRF5_SDK_PATH}/components/softdevice/s130/headers/nrf51"
         )
     else()
         message("No SOFTDEVICE defined, include path to soc_nosd ")
-        target_include_directories( TARGET
+        target_include_directories( ${TARGET} PUBLIC
                 "${NRF5_SDK_PATH}/components/drivers_nrf/nrf_soc_nosd"
         )
     endif()
