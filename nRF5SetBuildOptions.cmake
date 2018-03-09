@@ -1,29 +1,93 @@
 
 
-# set compiler and linker flags etc.
+# set compiler options, definitions, and linker flags etc.
 # This should have only that purpose, and not to list source files or include paths
 
 
-macro(nRF5SetSoftdeviceOptions)
+#Obsolete but kept as documentation of the original
+# Instead use: nRF5SetChipDefinitions(), nRF5SetTargetCompileOptions(), and nRF5SetSoftdeviceDefinitions
+# each specific to a target
+#
+#macro(nRF5SetSoftdeviceOptions)
 
 # Softdevice is specific to a chip family
 # But family to Softdevice is one-to-many
 
-if (NRF_SOFTDEVICE MATCHES "s130")
-   set(NRF5_LINKER_SCRIPT "${CMAKE_SOURCE_DIR}/gcc_nrf51.ld")
-   add_definitions(-DSOFTDEVICE_PRESENT -DS130 -DNRF_SD_BLE_API_VERSION=2 -DSWI_DISABLE0 -DBLE_STACK_SUPPORT_REQD)
-   set(SOFTDEVICE_PATH "${NRF5_SDK_PATH}/components/softdevice/s130/hex/s130_nrf51_2.0.1_softdevice.hex")
-elseif (NRF_SOFTDEVICE MATCHES "s132")
-    set(NRF5_LINKER_SCRIPT "${CMAKE_SOURCE_DIR}/gcc_nrf52.ld")
-    add_definitions(-DSOFTDEVICE_PRESENT -DS132 -DBLE_STACK_SUPPORT_REQD -DNRF_SD_BLE_API_VERSION=5)
-    set(SOFTDEVICE_PATH "${NRF5_SDK_PATH}/components/softdevice/s132/hex/s132_nrf52_5.0.0_softdevice.hex")     
-else()
-   message("Building without Softdevice")
-   set(NRF5_LINKER_SCRIPT "${CMAKE_SOURCE_DIR}/gcc_nrf52NoSD.ld")
-endif()
+#if (NRF_SOFTDEVICE MATCHES "s130")
+#   set(NRF5_LINKER_SCRIPT "${CMAKE_SOURCE_DIR}/gcc_nrf51.ld")
+#   add_definitions(-DSOFTDEVICE_PRESENT -DS130 -DNRF_SD_BLE_API_VERSION=2 -DSWI_DISABLE0 -DBLE_STACK_SUPPORT_REQD)
+#   set(SOFTDEVICE_PATH "${NRF5_SDK_PATH}/components/softdevice/s130/hex/s130_nrf51_2.0.1_softdevice.hex")
+#elseif (NRF_SOFTDEVICE MATCHES "s132")
+#    set(NRF5_LINKER_SCRIPT "${CMAKE_SOURCE_DIR}/gcc_nrf52.ld")
+#    add_definitions(-DSOFTDEVICE_PRESENT -DS132 -DBLE_STACK_SUPPORT_REQD -DNRF_SD_BLE_API_VERSION=5)
+#    set(SOFTDEVICE_PATH "${NRF5_SDK_PATH}/components/softdevice/s132/hex/s132_nrf52_5.0.0_softdevice.hex")     
+#else()
+#   message("Building without Softdevice")
+#   set(NRF5_LINKER_SCRIPT "${CMAKE_SOURCE_DIR}/gcc_nrf52NoSD.ld")
+#endif()
+#
+#endmacro()
 
+
+# TODO not exhaustive, and actually nrf51 is family but means 51422, etc.
+
+# TODO don't know if the 52810 defs are correct
+# Note the 52810 uses dev kit 52DK having 52832 as emulator
+
+macro(nRF5SetChipCompileDefinitions TARGET CHIP )
+    
+    if (${CHIP} MATCHES "nrf51")
+        set( RESULT 
+             -DBOARD_PCA10028 -DNRF51 -DNRF51422
+        )
+    elseif (${CHIP} MATCHES "nrf52832")
+        set( RESULT 
+                -DNRF52 -DNRF52832 -DNRF52_PAN_64 -DNRF52_PAN_12 -DNRF52_PAN_58 -DNRF52_PAN_54 -DNRF52_PAN_31 -DNRF52_PAN_51 -DNRF52_PAN_36 -DNRF52_PAN_15 -DNRF52_PAN_20 -DNRF52_PAN_55 -DBOARD_PCA10040
+        )
+    elseif (${CHIP} MATCHES "nrf52810")
+        set( RESULT 
+                -DNRF52 -DNRF52810 -DNRF52_PAN_64 -DNRF52_PAN_12 -DNRF52_PAN_58 -DNRF52_PAN_54 -DNRF52_PAN_31 -DNRF52_PAN_51 -DNRF52_PAN_36 -DNRF52_PAN_15 -DNRF52_PAN_20 -DNRF52_PAN_55 -DBOARD_PCA10040
+        )
+    else()
+        message("No compiler definitions specific to chip: ${CHIP}. ")
+    endif()
+
+    target_compile_definitions( ${TARGET} PUBLIC ${RESULT} )
+    message("Compiler definitions specific to chip ${CHIP}: ${RESULT}")
 endmacro()
 
+
+# Function to set var for CPU_FLAGS
+# CPU_FLAGS is passed to compiler and linker
+
+# TODO make this so it can be set on a target
+
+# !!! The result is a single string, not a list of strings
+
+function(nRF5SetFamilyCPUFlags VAR FAMILY )
+    
+    if (${FAMILY} MATCHES "nrf51")
+        set( RESULT 
+             "-mcpu=cortex-m0 -mfloat-abi=soft"
+        )
+    elseif (${FAMILY} MATCHES "nrf52")
+        set( RESULT 
+                "-mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16"
+        )
+    else()
+        message("No compiler options specific to family: ${FAMILY}. ")
+    endif()
+
+    # This is not sufficient, since linker also needs flags: target_compile_options( ${TARGET} PUBLIC ${RESULT} )
+    set(${VAR} "${RESULT}" PARENT_SCOPE)    # Set the named variable in caller's scope
+    message("CPU_FLAGS specific to family ${FAMILY}: ${RESULT}")
+endfunction()
+
+
+
+# None of this is Softdevice specific or target family (51 or 52) specific
+# However, you must call nRF5SetSoftdeviceLinkerScript(NRF5_LINKER_SCRIPT "s132") prior
+# And you must call
 
 macro(nRF5SetBuildOptions)
     # fix on macOS: prevent cmake from adding implicit parameters to Xcode
@@ -40,22 +104,7 @@ macro(nRF5SetBuildOptions)
     set(CMAKE_CXX_COMPILER "${ARM_NONE_EABI_TOOLCHAIN_PATH}/bin/arm-none-eabi-c++")
     set(CMAKE_ASM_COMPILER "${ARM_NONE_EABI_TOOLCHAIN_PATH}/bin/arm-none-eabi-gcc")
 
-    # CPU specific settings
-    if (NRF_TARGET MATCHES "nrf51")
-        # nRF51 (nRF51-DK => PCA10028)
-
-        set(CPU_FLAGS "-mcpu=cortex-m0 -mfloat-abi=soft")
-        add_definitions(-DBOARD_PCA10028 -DNRF51 -DNRF51422) 
-    elseif (NRF_TARGET MATCHES "nrf52")
-        # nRF52 (nRF52-DK => PCA10040)
-
-        set(CPU_FLAGS "-mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16")
-        add_definitions(-DNRF52 -DNRF52832 -DNRF52_PAN_64 -DNRF52_PAN_12 -DNRF52_PAN_58 -DNRF52_PAN_54 -DNRF52_PAN_31 -DNRF52_PAN_51 -DNRF52_PAN_36 -DNRF52_PAN_15 -DNRF52_PAN_20 -DNRF52_PAN_55 -DBOARD_PCA10040)
-        
-    endif ()
-
-    # Softdevice settings
-    nRF5SetSoftdeviceOptions()
+    nRF5SetFamilyCPUFlags(CPU_FLAGS ${NRF_TARGET})
 
     set(COMMON_FLAGS "-MP -MD -mthumb -mabi=aapcs -Wall -Werror -O3 -g3 -ffunction-sections -fdata-sections -fno-strict-aliasing -fno-builtin --short-enums ${CPU_FLAGS}")
 

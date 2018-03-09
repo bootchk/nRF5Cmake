@@ -5,6 +5,7 @@ include("nRF5SetBuildOptions")
 include("nRF5Sources")
 include("nRF5IncludePaths")
 include("nRF5CustomTargets")
+include("nRF5SoftdeviceDefines")
 
 # SDK version specific headers and sources
 include("CMake_nRF5x_v14_2")

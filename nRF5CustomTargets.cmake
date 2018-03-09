@@ -43,7 +43,7 @@ macro(nRF5AddCustomTargets EXECUTABLE_NAME)
             COMMENT "flashing ${EXECUTABLE_NAME}.hex"
             )
 
-add_custom_target(FLASH_SOFTDEVICE ALL
+   add_custom_target(FLASH_SOFTDEVICE ALL
             COMMAND ${NRFJPROG} --program ${SOFTDEVICE_PATH} -f ${NRF_TARGET} --sectorerase
             COMMAND sleep 0.5s
             COMMAND ${NRFJPROG} --reset -f ${NRF_TARGET}
