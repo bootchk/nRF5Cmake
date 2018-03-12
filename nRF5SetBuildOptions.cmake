@@ -64,6 +64,7 @@ endmacro()
 
 # Function to set var for CPU_FLAGS
 # CPU_FLAGS is passed to compiler and linker
+# Distinct from FPU_FLAGS
 
 # TODO make this so it can be set on a target
 
@@ -72,19 +73,13 @@ endmacro()
 function(nRF5SetChipCPUFlags VAR CHIP )
     
     if (${CHIP} MATCHES "nrf51")
-        set( RESULT 
-             "-mcpu=cortex-m0 -mfloat-abi=soft"
-        )
+        set( RESULT  "-mcpu=cortex-m0" )
     elseif (${CHIP} MATCHES "nrf52832")
-        set( RESULT 
-                "-mcpu=cortex-m4 -mfloat-abi=hard -mfpu=fpv4-sp-d16"
-        )
+        set( RESULT  "-mcpu=cortex-m4" )
     elseif (${CHIP} MATCHES "nrf52810")
-        set( RESULT 
-                "-mcpu=cortex-m4 -mfloat-abi=soft"
-        )
+        set( RESULT   "-mcpu=cortex-m4" )
     else()
-        message("No compiler options specific to family: ${FAMILY}. ")
+        message("No compiler options specific to family: ${CHIP}. ")
     endif()
 
     # This is not sufficient, since linker also needs flags: target_compile_options( ${TARGET} PUBLIC ${RESULT} )
@@ -92,6 +87,22 @@ function(nRF5SetChipCPUFlags VAR CHIP )
     message("CPU_FLAGS specific to chip ${CHIP}: ${RESULT}")
 endfunction()
 
+
+
+function(nRF5SetChipFPUFlags VAR FLOAT_ABI )
+    
+    if (${FLOAT_ABI} MATCHES "soft")
+        set( RESULT  "-mfloat-abi=soft" )
+    elseif (${CHIP} MATCHES "hard")
+        set( RESULT "mfloat-abi=hard -mfpu=fpv4-sp-d16" )
+    else()
+        message("No compiler options specific to float ABI: ${FLOAT_ABI}. ")
+    endif()
+
+    # This is not sufficient, since linker also needs flags: target_compile_options( ${TARGET} PUBLIC ${RESULT} )
+    set(${VAR} "${RESULT}" PARENT_SCOPE)    # Set the named variable in caller's scope
+    message("FPU_FLAGS specific to float ABI ${FLOAT_ABI}: ${RESULT}")
+endfunction()
 
 
 # None of this is Softdevice specific or target family (51 or 52) specific
@@ -114,14 +125,15 @@ macro(nRF5SetBuildOptions)
     set(CMAKE_ASM_COMPILER "${ARM_NONE_EABI_TOOLCHAIN_PATH}/bin/arm-none-eabi-gcc")
 
     nRF5SetChipCPUFlags(CPU_FLAGS ${CHIP})
+    nRF5SetChipFPUFlags(FPU_FLAGS ${FLOAT_ABI})
 
-    set(COMMON_FLAGS "-MP -MD -mthumb -mabi=aapcs -Wall -Werror -O3 -g3 -ffunction-sections -fdata-sections -fno-strict-aliasing -fno-builtin --short-enums ${CPU_FLAGS}")
+    set(COMMON_FLAGS "-MP -MD -mthumb -mabi=aapcs -Wall -Werror -O3 -g3 -ffunction-sections -fdata-sections -fno-strict-aliasing -fno-builtin --short-enums ${CPU_FLAGS} ${FPU_FLAGS}")
 
     # compiler/assambler/linker flags
     set(CMAKE_C_FLAGS "${COMMON_FLAGS}")
     set(CMAKE_CXX_FLAGS "${COMMON_FLAGS}")
     set(CMAKE_ASM_FLAGS "-MP -MD -std=c99 -x assembler-with-cpp")
-    set(CMAKE_EXE_LINKER_FLAGS "-mthumb -mabi=aapcs -std=gnu++98 -std=c99 -L ${NRF5_SDK_PATH}/components/toolchain/gcc -T${NRF5_LINKER_SCRIPT} ${CPU_FLAGS} -Wl,--gc-sections --specs=nano.specs -lc -lnosys -lm")
+    set(CMAKE_EXE_LINKER_FLAGS "-mthumb -mabi=aapcs -std=gnu++98 -std=c99 -L ${NRF5_SDK_PATH}/components/toolchain/gcc -T${NRF5_LINKER_SCRIPT} ${CPU_FLAGS} ${FPU_FLAGS} -Wl,--gc-sections --specs=nano.specs -lc -lnosys -lm")
     # note: we must override the default cmake linker flags so that CMAKE_C_FLAGS are not added implicitly
     # lkk: added LINK_LIBRARIES
     set(CMAKE_C_LINK_EXECUTABLE "${CMAKE_C_COMPILER} <LINK_FLAGS> <OBJECTS> -o <TARGET>")
