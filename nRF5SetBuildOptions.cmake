@@ -127,7 +127,9 @@ macro(nRF5SetBuildOptions)
     nRF5SetChipCPUFlags(CPU_FLAGS ${CHIP})
     nRF5SetChipFPUFlags(FPU_FLAGS ${FLOAT_ABI})
 
-    set(COMMON_FLAGS "-MP -MD -mthumb -mabi=aapcs -Wall -Werror -O3 -g3 -ffunction-sections -fdata-sections -fno-strict-aliasing -fno-builtin --short-enums ${CPU_FLAGS} ${FPU_FLAGS}")
+
+    # TODO optimization flags a var
+    set(COMMON_FLAGS "-MP -MD -mthumb -mabi=aapcs -Wall -Werror -O0 -g3 -ffunction-sections -fdata-sections -fno-strict-aliasing -fno-builtin --short-enums ${CPU_FLAGS} ${FPU_FLAGS}")
 
     # compiler/assambler/linker flags
     set(CMAKE_C_FLAGS "${COMMON_FLAGS}")

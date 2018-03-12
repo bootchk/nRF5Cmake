@@ -10,13 +10,17 @@
 # sdk_config.h>NRF_LOG_ENABLED
 
 macro(nRF5x_addNRF_LOG)
+    # lkk name changed to experimental_log from log
+    # added external/fprintf, /atomic
     include_directories(
-            "${NRF5_SDK_PATH}/components/libraries/log/src/"
+            "${NRF5_SDK_PATH}/components/libraries/experimental_log/src/"
+            "${NRF5_SDK_PATH}/external/fprintf/"
+            "${NRF5_SDK_PATH}/components/libraries/atomic/"
     )
     
     list(APPEND SDK_SOURCES
-            "${NRF5_SDK_PATH}/components/libraries/log/src/nrf_log_backend_serial.c"
-            "${NRF5_SDK_PATH}/components/libraries/log/src/nrf_log_frontend.c"
+            "${NRF5_SDK_PATH}/components/libraries/experimental_log/src/nrf_log_backend_serial.c"
+            "${NRF5_SDK_PATH}/components/libraries/experimental_log/src/nrf_log_frontend.c"
             )
 
 endmacro(nRF5x_addNRF_LOG)

@@ -3,6 +3,7 @@
 include("nRF5Sanity")
 include("nRF5SetBuildOptions")
 include("nRF5Sources")
+include("nRF5SourcesOptional")
 include("nRF5IncludePaths")
 include("nRF5CustomTargets")
 include("nRF5SoftdeviceDefines")

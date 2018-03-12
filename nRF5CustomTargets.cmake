@@ -38,12 +38,12 @@ endmacro()
 
 macro(nRF5AddCustomTargets EXECUTABLE_NAME)
 
-    set(FAMILY_STRING "-f unknown")
+    # This has issues with excaped blanks: set(FAMILY_STRING "")
 
     add_custom_target("FLASH_${EXECUTABLE_NAME}" ALL
             COMMAND ${NRFJPROG} --program ${EXECUTABLE_NAME}.hex ${FAMILY_STRING} --sectorerase
             COMMAND sleep 0.5s
-            COMMAND ${NRFJPROG} --reset ${FAMILY_STRING}
+            COMMAND ${NRFJPROG} --reset -f unknown
             DEPENDS ${EXECUTABLE_NAME}
             COMMENT "flashing ${EXECUTABLE_NAME}.hex"
             )
@@ -51,12 +51,12 @@ macro(nRF5AddCustomTargets EXECUTABLE_NAME)
    add_custom_target(FLASH_SOFTDEVICE ALL
             COMMAND ${NRFJPROG} --program ${SOFTDEVICE_PATH} -f unknown --sectorerase
             COMMAND sleep 0.5s
-            COMMAND ${NRFJPROG} --reset ${FAMILY_STRING}
+            COMMAND ${NRFJPROG} --reset -f unknown
             COMMENT "flashing SoftDevice"
             )
 
     add_custom_target(FLASH_ERASE ALL
-            COMMAND ${NRFJPROG} --eraseall ${FAMILY_STRING}
+            COMMAND ${NRFJPROG} --eraseall -f unknown
             COMMENT "erasing flashing"
             )
 
