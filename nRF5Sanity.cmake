@@ -1,10 +1,9 @@
 
-# check caller set necessary vars
+# check caller set necessary items
 # - toolchain SDK and tools paths.
-# - config vars
+# - properties on target
 # - linker script
 
-# set vars referenced by CMake_nRF5x macros
 # nowhere are the valid combinations checked.
 # Typically:
 #  nrf52 nrf52832 s132 [soft,hard]
@@ -22,7 +21,7 @@
 
 macro(nRF5CheckSetupPreconditions)
 
-# tools
+# tool paths
 
 if (NOT ARM_NONE_EABI_TOOLCHAIN_PATH)
     message(FATAL_ERROR "The path to the arm-none-eabi-gcc toolchain (ARM_NONE_EABI_TOOLCHAIN_PATH) must be set.")
@@ -38,65 +37,59 @@ if (NOT NRFJPROG)
     message(FATAL_ERROR "The path to the nrfjprog utility (NRFJPROG) must be set.")
 endif ()
 
-
-# check config vars set
-
-# This actually declares architecture M4 vs M0, and nothing more
-if (NRF_FAMILY MATCHES "nrf51")
-
-elseif (NRF_FAMILY MATCHES "nrf52")
-
-elseif (NOT NRF_FAMILY)
-    message(FATAL_ERROR "NRF_FAMILY must be defined to nrf51 or nrf52")
-else ()
-    message(FATAL_ERROR "${NRF_FAMILY} not supported.")
-endif ()
+endmacro()
 
 
 
+macro(nRF5CheckTargetProperties TARGET)
+# check properties set on target
+
+# Obsolete NRF_FAMILY actually declares architecture M4 vs M0, and nothing more
+
+get_target_property(CHIP ${TARGET} CHIP)
 if (CHIP MATCHES "nrf52832_xxaa")
 
 elseif (CHIP MATCHES "nrf52810_xxaa")
 
 elseif (CHIP MATCHES "nrf52810e")
 
-elseif (NOT CHIP)
-    message(FATAL_ERROR "CHIP must be defined")
+elseif (CHIP MATCHES "unknown")
+    message(FATAL_ERROR "${TARGET} lacks CHIP property.")
 else ()
     message(FATAL_ERROR "${CHIP} not supported.")
 endif ()
 
 
-
+get_target_property(SOFTDEVICE ${TARGET} SOFTDEVICE)
 if (SOFTDEVICE MATCHES "s132")
 
 elseif (SOFTDEVICE MATCHES "s112")
 
 elseif (SOFTDEVICE MATCHES "none")
 
-elseif (NOT SOFTDEVICE)
-    message(FATAL_ERROR "SOFTDEVICE must be defined")
+elseif (SOFTDEVICE MATCHES "unknown")
+    message(FATAL_ERROR "${TARGET} lacks property: SOFTDEVICE .")
 else ()
     message(FATAL_ERROR "${SOFTDEVICE} not supported.")
 endif ()
 
 
-
+get_target_property(FLOAT_ABI ${TARGET} FLOAT_ABI)
 if (FLOAT_ABI MATCHES "soft")
 
 elseif (FLOAT_ABI MATCHES "hard")
 
-elseif (NOT FLOAT_ABI)
-    message(FATAL_ERROR "FLOAT_ABI must be defined")
+elseif (FLOAT_ABI MATCHES "unknown")
+    message(FATAL_ERROR "${TARGET} lacks property: FLOAT_ABI.")
 else ()
     message(FATAL_ERROR "${FLOAT_ABI} not supported.")
 endif ()
 
 
 
-
 if (NOT NRF5_LINKER_SCRIPT)
-    message(FATAL_ERROR "NRF5_LINKER_SCRIPT must be defined")
+    # not fatal if building library
+    message("NRF5_LINKER_SCRIPT is not defined")
 endif ()
 
 endmacro()

@@ -1,9 +1,9 @@
 
 # macros that define lists of source files
 
-# These append to two lists:
-#    SDK_SOURCES_STARTUP :  usually only in an executable (main)
+# These append to list:
 #    SDK_SOURCES : in an executable or a library
+# Startup files are added to target.
 # This is different design from original cmake-nrf5x scripts
 
 
@@ -11,20 +11,25 @@
 
 # Startup files
 # !!! Not appending to same list as other macros
-macro(nRF5SDKSourcesStartup)
-    if (NRF_FAMILY MATCHES "nrf51")
-	list(APPEND SDK_SOURCES_STARTUP
+# Instead, adding to a target
+macro(nRF5SDKSetTargetStartupSources TARGET)
+
+    get_target_property(CHIP ${TARGET} CHIP)
+    if (CHIP MATCHES "nrf51")
+	set(RESULT 
                 "${NRF5_SDK_PATH}/components/toolchain/system_nrf51.c"
                 "${NRF5_SDK_PATH}/components/toolchain/gcc/gcc_startup_nrf51.S"
-                )
-    elseif (NRF_FAMILY MATCHES "nrf52")
-        list(APPEND SDK_SOURCES_STARTUP
+           )
+    elseif (CHIP MATCHES "nrf52832_xxaa")
+        set(RESULT 
                 "${NRF5_SDK_PATH}/components/toolchain/system_nrf52.c"
                 "${NRF5_SDK_PATH}/components/toolchain/gcc/gcc_startup_nrf52.S"
-                )
+           )
     else ()
          message("No startup files.")
     endif()
+    message( "Startup sources for target ${TARGET}: ${RESULT}")
+    target_sources( ${TARGET} PUBLIC ${RESULT} )
 endmacro()
 
 

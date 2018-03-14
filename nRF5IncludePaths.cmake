@@ -62,28 +62,31 @@ endmacro()
 # This encapsulates knowledge of the SDK dir structure, which could change
 
 macro(nRF5SetSoftdeviceIncludePaths TARGET SOFTDEVICE )
-message("SOFTDEVICE is ${SOFTDEVICE} ")
-if (${SOFTDEVICE} MATCHES "s132")
-        target_include_directories( ${TARGET} PUBLIC
+    message("SOFTDEVICE is ${SOFTDEVICE} ")
+    if (${SOFTDEVICE} MATCHES "s132")
+        set(RESULT
                 "${NRF5_SDK_PATH}/components/softdevice/s132/headers"
                 "${NRF5_SDK_PATH}/components/softdevice/s132/headers/nrf52"
         )
-    elseif (SOFTDEVICE MATCHES "s112")
-         target_include_directories( ${TARGET} PUBLIC
+    elseif (${SOFTDEVICE} MATCHES "s112")
+         set(RESULT
                 "${NRF5_SDK_PATH}/components/softdevice/s112/headers"
                 "${NRF5_SDK_PATH}/components/softdevice/s112/headers/nrf52"
         )
-    elseif (SOFTDEVICE MATCHES "s130")
-         target_include_directories( ${TARGET} PUBLIC
+    elseif (${SOFTDEVICE} MATCHES "s130")
+         set(RESULT
                 "${NRF5_SDK_PATH}/components/softdevice/s130/headers"
                 "${NRF5_SDK_PATH}/components/softdevice/s130/headers/nrf51"
         )
     else()
         message("No SOFTDEVICE defined, include path to soc_nosd ")
-        target_include_directories( ${TARGET} PUBLIC
+        set(RESULT
                 "${NRF5_SDK_PATH}/components/drivers_nrf/nrf_soc_nosd"
         )
     endif()
+
+    message("Include path to SD ${SOFTDEVICE} for target ${TARGET}: ${RESULT}")
+    target_include_directories( ${TARGET} PUBLIC ${RESULT})
 endmacro()
 
 
