@@ -25,6 +25,11 @@ macro(nRF5SetTargetStartupSources TARGET)
                 "${NRF5_SDK_PATH}/components/toolchain/system_nrf52.c"
                 "${NRF5_SDK_PATH}/components/toolchain/gcc/gcc_startup_nrf52.S"
            )
+    elseif (CHIP MATCHES "nrf52810_xxaa")
+        set(RESULT 
+                "${NRF5_SDK_PATH}/components/toolchain/system_nrf52810.c"
+                "${NRF5_SDK_PATH}/components/toolchain/gcc/gcc_startup_nrf52810.S"
+           )
     else ()
          message("No startup files.")
     endif()
