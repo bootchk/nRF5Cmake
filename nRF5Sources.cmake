@@ -12,7 +12,7 @@
 # Startup files
 # !!! Not appending to same list as other macros
 # Instead, adding to a target
-macro(nRF5SDKSetTargetStartupSources TARGET)
+macro(nRF5SetTargetStartupSources TARGET)
 
     get_target_property(CHIP ${TARGET} CHIP)
     if (CHIP MATCHES "nrf51")

@@ -68,8 +68,12 @@ macro(nRF5SetBuildOptions)
     set(CMAKE_C_FLAGS "${COMMON_FLAGS}")
     set(CMAKE_CXX_FLAGS "${COMMON_FLAGS}")
     set(CMAKE_ASM_FLAGS "-MP -MD -std=c99 -x assembler-with-cpp")
-    #set(CMAKE_EXE_LINKER_FLAGS "-mthumb -mabi=aapcs -std=gnu++98 -std=c99 -L ${NRF5_SDK_PATH}/components/toolchain/gcc -T${NRF5_LINKER_SCRIPT} ${CPU_FLAGS} ${FPU_FLAGS} -Wl,--gc-sections --specs=nano.specs -lc -lnosys -lm")
-    set(CMAKE_EXE_LINKER_FLAGS "-mthumb -mabi=aapcs -std=gnu++98 -std=c99 -L ${NRF5_SDK_PATH}/components/toolchain/gcc -T${NRF5_LINKER_SCRIPT} -Wl,--gc-sections --specs=nano.specs -lc -lnosys -lm")
+
+    # ORIGINALLY: set(CMAKE_EXE_LINKER_FLAGS "-mthumb -mabi=aapcs -std=gnu++98 -std=c99 -L ${NRF5_SDK_PATH}/components/toolchain/gcc -T${NRF5_LINKER_SCRIPT} ${CPU_FLAGS} ${FPU_FLAGS} -Wl,--gc-sections --specs=nano.specs -lc -lnosys -lm")
+    
+    # Note there is a path to default linker scripts, which generally are not useful
+    set(CMAKE_EXE_LINKER_FLAGS "-mthumb -mabi=aapcs -std=gnu++98 -std=c99 -L ${NRF5_SDK_PATH}/components/toolchain/gcc -Wl,--gc-sections --specs=nano.specs -lc -lnosys -lm")
+
     # note: we must override the default cmake linker flags so that CMAKE_C_FLAGS are not added implicitly
     # lkk: added LINK_LIBRARIES
     set(CMAKE_C_LINK_EXECUTABLE "${CMAKE_C_COMPILER} <LINK_FLAGS> <OBJECTS> -o <TARGET>")
@@ -80,8 +84,6 @@ macro(nRF5SetBuildOptions)
     SET(CMAKE_SHARED_LIBRARY_LINK_CXX_FLAGS "")
     message("Linker flags ${CMAKE_EXE_LINKER_FLAGS}")
     message("Shared link flags ${CMAKE_SHARED_LIBRARY_LINK_C_FLAGS}")
-
-
 
     # TODO move this?
     include_directories(".")

@@ -64,6 +64,24 @@ endmacro()
 
 
 
+macro(nRF5SetTargetsLinkerScript TARGET SCRIPT )
+    # !!! Obscure that target_link_libraries sets flags also
+    # This doesn't work:  
+    target_link_libraries( ${TARGET} PUBLIC "-T ${SCRIPT}" )
+    # target_link_libraries( ${TARGET} "-T${SCRIPT}" )
+    # Make build depend on linker script
+    set_target_properties(${TARGET} PROPERTIES LINK_DEPENDS ${SCRIPT})
+
+    # This stuff also doesn't work(?), retained as documentation
+    #set_target_properties( ${TARGET} PROPERTIES LINK_FLAGS "-T ${SCRIPT}" )
+    #get_target_property(TMP ${TARGET} LINK_FLAGS)
+    #message("Linker script for ${TARGET}: ${TMP}")
+
+    # TODO message get compiler options from target
+    message("Linker script for ${TARGET}: ${SCRIPT}")
+endmacro()
+
+
 #OBSOLETE
 # Function to set var for CPU_FLAGS
 # CPU_FLAGS is passed to compiler and linker

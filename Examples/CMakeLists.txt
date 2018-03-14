@@ -15,14 +15,13 @@ include("CMakeEnv")
 
 include("nRF5")
 
-# v14.2 sources and includes already defined
-# TODO fix this
+# SDK v14.2 sources and includes defined
+# TODO fix this by making it vary with CHIP
 
 
+#set(NRF5_LINKER_SCRIPT "${CMAKE_SOURCE_DIR}/gcc_nrf52.ld")
 
-set(NRF5_LINKER_SCRIPT "${CMAKE_SOURCE_DIR}/gcc_nrf52.ld")
-
-# OBSOLETE nRF5CheckSetupPreconditions()
+nRF5CheckSetupPreconditions()
 nRF5SetBuildOptions()
 nRF5SetIncludePaths()
 
@@ -40,7 +39,8 @@ set_target_properties( Foo
 nRF5CheckTargetProperties(Foo)
 # Set paths and other definitions ON the executable target
 nRF5ConfigTargetByProperties(Foo)
-nRF5SDKSetTargetStartupSources(Foo)
+nRF5SetTargetStartupSources(Foo)
+nRF5SetTargetsLinkerScript(Foo "${CMAKE_SOURCE_DIR}/gcc_nrf52.ld")
 
 target_sources(Foo
    PUBLIC
