@@ -34,7 +34,7 @@ macro(nRF5SetTargetsCompileDefinitionsByChip TARGET CHIP )
                 -DNRF52810_XXAA -DDEVELOP_IN_NRF52832 -DBOARD_PCA10040
         )
     else()
-        message("No compiler definitions specific to chip: ${CHIP}. ")
+        message("???No compiler definitions specific to chip: ${CHIP}. ")
     endif()
 
     target_compile_definitions( ${TARGET} PUBLIC ${RESULT} )
@@ -46,12 +46,14 @@ endmacro()
 macro(nRF5SetTargetsCompileOptionsByChip TARGET CHIP )
     if (${CHIP} MATCHES "nrf51")
         set( RESULT  "-mcpu=cortex-m0" )
-    elseif (${CHIP} MATCHES "nrf52832")
+    elseif (${CHIP} MATCHES "nrf52832_xxaa")
         set( RESULT  "-mcpu=cortex-m4" )
-    elseif (${CHIP} MATCHES "nrf52810")
+    elseif (${CHIP} MATCHES "nrf52810_xxaa")
+        set( RESULT   "-mcpu=cortex-m4" )
+    elseif (${CHIP} MATCHES "nrf52810e")
         set( RESULT   "-mcpu=cortex-m4" )
     else()
-        message("No compiler options specific to family: ${CHIP}. ")
+        message("???No compiler options specific to family: ${CHIP}. ")
     endif()
     target_compile_options( ${TARGET} PUBLIC ${RESULT} )
 
@@ -66,7 +68,6 @@ endmacro()
 
 macro(nRF5SetTargetsLinkerScript TARGET SCRIPT )
     # !!! Obscure that target_link_libraries sets flags also
-    # This doesn't work:  
     target_link_libraries( ${TARGET} PUBLIC "-T ${SCRIPT}" )
     # target_link_libraries( ${TARGET} "-T${SCRIPT}" )
     # Make build depend on linker script
@@ -95,7 +96,7 @@ function(nRF5SetChipCPUFlags VAR CHIP )
     
     if (${CHIP} MATCHES "nrf51")
         set( RESULT  "-mcpu=cortex-m0" )
-    elseif (${CHIP} MATCHES "nrf52832")
+    elseif (${CHIP} MATCHES "nrf52832_xxaa")
         set( RESULT  "-mcpu=cortex-m4" )
     elseif (${CHIP} MATCHES "nrf52810")
         set( RESULT   "-mcpu=cortex-m4" )
