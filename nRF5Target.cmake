@@ -38,7 +38,7 @@ macro(nRF5SetTargetsCompileDefinitionsByChip TARGET CHIP )
     endif()
 
     target_compile_definitions( ${TARGET} PUBLIC ${RESULT} )
-    message("Compiler definitions specific to chip ${CHIP}: ${RESULT}")
+    message("Target: ${TARGET} compiler defs for chip ${CHIP}: ${RESULT}")
 endmacro()
 
 
@@ -61,7 +61,7 @@ macro(nRF5SetTargetsCompileOptionsByChip TARGET CHIP )
     target_compile_options( ${TARGET} PUBLIC "-mfloat-abi=soft" )
 
     # TODO message get compiler options from target
-    message("Compiler options specific to target ${TARGET}: ${RESULT}")
+    message("Target: ${TARGET} compiler options for chip ${CHIP}: ${RESULT}")
 endmacro()
 
 
@@ -79,7 +79,7 @@ macro(nRF5SetTargetsLinkerScript TARGET SCRIPT )
     #message("Linker script for ${TARGET}: ${TMP}")
 
     # TODO message get compiler options from target
-    message("Linker script for ${TARGET}: ${SCRIPT}")
+    message("Target ${TARGET} linker script: ${SCRIPT}")
 endmacro()
 
 

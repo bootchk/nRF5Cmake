@@ -38,7 +38,7 @@ macro(nRF5SetTargetStartupSources TARGET)
     else ()
          message("???No startup files for chip: ${CHIP}.")
     endif()
-    message( "Startup sources for target ${TARGET}: ${RESULT}")
+    message("Target ${TARGET} startup sources for chip ${CHIP}: ${RESULT}")
     target_sources( ${TARGET} PUBLIC ${RESULT} )
 endmacro()
 

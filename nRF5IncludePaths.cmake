@@ -85,7 +85,7 @@ macro(nRF5SetSoftdeviceIncludePaths TARGET SOFTDEVICE )
         )
     endif()
 
-    message("Include path to SD ${SOFTDEVICE} for target ${TARGET}: ${RESULT}")
+    message("Target ${TARGET} include path to SD ${SOFTDEVICE}: ${RESULT}")
     target_include_directories( ${TARGET} PUBLIC ${RESULT})
 endmacro()
 

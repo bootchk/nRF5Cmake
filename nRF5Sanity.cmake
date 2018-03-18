@@ -86,11 +86,11 @@ else ()
 endif ()
 
 
-
-if (NOT NRF5_LINKER_SCRIPT)
+# TODO this check should be on the target property, after other macros
+#if (NOT NRF5_LINKER_SCRIPT)
     # not fatal if building library
-    message("NRF5_LINKER_SCRIPT is not defined")
-endif ()
+    #message("NRF5_LINKER_SCRIPT is not defined")
+# endif ()
 
 endmacro()
 

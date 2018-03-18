@@ -11,24 +11,20 @@
 
 macro(nRF5SetSoftdeviceDefinitions TARGET SOFTDEVICE )
 
-if (${SOFTDEVICE} MATCHES "s132")
-        set( RESULT 
-             -DSOFTDEVICE_PRESENT -DS132 -DBLE_STACK_SUPPORT_REQD -DNRF_SD_BLE_API_VERSION=5
-        )
+   if (${SOFTDEVICE} MATCHES "s132")
+        set( RESULT  -DSOFTDEVICE_PRESENT -DS132 -DBLE_STACK_SUPPORT_REQD -DNRF_SD_BLE_API_VERSION=5 )
     elseif (${SOFTDEVICE} MATCHES "s112")
-        set( RESULT 
-                -DSOFTDEVICE_PRESENT -DS112 -DBLE_STACK_SUPPORT_REQD -DNRF_SD_BLE_API_VERSION=5
-        )
+        set( RESULT  -DSOFTDEVICE_PRESENT -DS112 -DBLE_STACK_SUPPORT_REQD -DNRF_SD_BLE_API_VERSION=5 )
     elseif (${SOFTDEVICE} MATCHES "s130")
-        set( RESULT 
-                -DSOFTDEVICE_PRESENT -DS130 -DNRF_SD_BLE_API_VERSION=2 -DSWI_DISABLE0 -DBLE_STACK_SUPPORT_REQD
-        )
+        set( RESULT  -DSOFTDEVICE_PRESENT -DS130 -DNRF_SD_BLE_API_VERSION=2 -DSWI_DISABLE0 -DBLE_STACK_SUPPORT_REQD )
+    elseif (${SOFTDEVICE} MATCHES "none")
+       set( RESULT "")
     else()
-        message("No compiler definitions specific to softdevice: ${SOFTDEVICE}. ")
+        message("??? Unsupported softdevice: ${SOFTDEVICE}. ")
     endif()
 
     target_compile_definitions( ${TARGET} PUBLIC ${RESULT} )
-    message("Compiler definitions specific to Softdevice ${SOFTDEVICE}: ${RESULT}")
+    message("Target ${TARGET} compiler defs for Softdevice ${SOFTDEVICE}: ${RESULT}")
 endmacro()
 
 
