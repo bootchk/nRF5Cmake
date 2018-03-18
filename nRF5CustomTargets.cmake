@@ -2,24 +2,28 @@
 
 
 
-macro(nRF5GenerateOtherArtifacts EXECUTABLE_NAME)
+macro(nRF5GenerateOtherArtifacts TARGET)
 
-    # artifact is .exe.  Not runnable on host.
-    # Really don't need to change the suffix
-    set_target_properties(${EXECUTABLE_NAME} PROPERTIES SUFFIX ".out")
+    # Build artifact will have no suffix unless we set it.  Not runnable on host.
+    # Set the suffix to what "file" cmd says: .elf
+    set_target_properties(${TARGET} PROPERTIES SUFFIX ".elf")
+    
+    set(EXECUTABLE_FILE "${TARGET}.elf")
 
     # link flags tell linker to generate a .map artifact
-    set_target_properties(${EXECUTABLE_NAME} PROPERTIES LINK_FLAGS "-Wl,-Map=${EXECUTABLE_NAME}.map")
+    #set_target_properties(${TARGET} PROPERTIES LINK_FLAGS "-Wl,-Map=${TARGET}.map")
+    # in cmake, link options are set using target_link_libraries
+    target_link_libraries(${TARGET} INTERFACE "-Wl,-Map=${TARGET}.map")
 
     # additional POST BUILD setps to create other file encodings ( .bin and .hex) files
     # since nrfjprog only takes a .hex
-    add_custom_command(TARGET ${EXECUTABLE_NAME}
+    add_custom_command(TARGET ${TARGET}
             POST_BUILD
-            COMMAND ${ARM_NONE_EABI_TOOLCHAIN_PATH}/bin/arm-none-eabi-size ${EXECUTABLE_NAME}.out
+            COMMAND ${ARM_NONE_EABI_TOOLCHAIN_PATH}/bin/arm-none-eabi-size ${EXECUTABLE_FILE}
             # Really don't need a .bin?  Other flash tools may support .bin?
-            #COMMAND ${ARM_NONE_EABI_TOOLCHAIN_PATH}/bin/arm-none-eabi-objcopy -O binary ${EXECUTABLE_NAME}.out "${EXECUTABLE_NAME}.bin"
-            COMMAND ${ARM_NONE_EABI_TOOLCHAIN_PATH}/bin/arm-none-eabi-objcopy -O ihex ${EXECUTABLE_NAME}.out "${EXECUTABLE_NAME}.hex"
-            COMMENT "post build steps for ${EXECUTABLE_NAME}"
+            #COMMAND ${ARM_NONE_EABI_TOOLCHAIN_PATH}/bin/arm-none-eabi-objcopy -O binary ${EXECUTABLE_FILE} "${TARGET}.bin"
+            COMMAND ${ARM_NONE_EABI_TOOLCHAIN_PATH}/bin/arm-none-eabi-objcopy -O ihex ${EXECUTABLE_FILE} "${TARGET}.hex"
+            COMMENT "post build steps for ${TARGET}"
             )
 endmacro()
 
@@ -36,16 +40,16 @@ endmacro()
 # nrfjprog has no command to return the chip model number
 # for "-f unknown" nrfjprog determinines the chip
 
-macro(nRF5AddCustomTargets EXECUTABLE_NAME)
+macro(nRF5AddCustomTargets TARGET)
 
     # This has issues with excaped blanks: set(FAMILY_STRING "")
 
-    add_custom_target("FLASH_${EXECUTABLE_NAME}" ALL
-            COMMAND ${NRFJPROG} --program ${EXECUTABLE_NAME}.hex ${FAMILY_STRING} --sectorerase
+    add_custom_target("FLASH_${TARGET}" ALL
+            COMMAND ${NRFJPROG} --program ${TARGET}.hex ${FAMILY_STRING} --sectorerase
             COMMAND sleep 0.5s
             COMMAND ${NRFJPROG} --reset -f unknown
-            DEPENDS ${EXECUTABLE_NAME}
-            COMMENT "flashing ${EXECUTABLE_NAME}.hex"
+            DEPENDS ${TARGET}
+            COMMENT "flashing ${TARGET}.hex"
             )
 
    add_custom_target(FLASH_SOFTDEVICE ALL

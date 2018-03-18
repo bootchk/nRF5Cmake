@@ -68,7 +68,7 @@ macro(nRF5SetBuildOptions)
     set(CMAKE_ASM_FLAGS "-MP -MD -std=c99 -x assembler-with-cpp")
 
     # ORIGINALLY: set(CMAKE_EXE_LINKER_FLAGS "-mthumb -mabi=aapcs -std=gnu++98 -std=c99 -L ${NRF5_SDK_PATH}/components/toolchain/gcc -T${NRF5_LINKER_SCRIPT} ${CPU_FLAGS} ${FPU_FLAGS} -Wl,--gc-sections --specs=nano.specs -lc -lnosys -lm")
-    # elided "-lc, -lnosys, -lm" => --specs=nosys.specs : I don't use libm and libc is redundant
+    # elided "-lc, -lnosys, -lm" => --specs=nosys.specs : I don't use libm and libc is redundant to nano.specs
     
     # Note there is a path to default linker scripts, which generally are not useful
     set(CMAKE_EXE_LINKER_FLAGS "-mthumb -mabi=aapcs -std=gnu++98 -std=c99 -L ${NRF5_SDK_PATH}/components/toolchain/gcc -Wl,--gc-sections --specs=nano.specs --specs=nosys.specs")
