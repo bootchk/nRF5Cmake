@@ -56,6 +56,18 @@ endmacro()
 
 # utils
 # required for SD and SD compatible drivers
+
+# another SDK file required for RTT
+macro(nRF5SetTargetRTTUtilSources TARGET)
+
+    set(RESULT
+            "${NRF5_SDK_PATH}/components/libraries/util/app_util_platform.c"
+            )
+    message("Target ${TARGET} util sources: ${RESULT}")
+    target_sources( ${TARGET} PUBLIC ${RESULT} )
+endmacro()
+
+# OLD implementation
 macro(nRF5SDKSourcesUtils)
 
     # "${NRF5_SDK_PATH}/components/libraries/util/sdk_errors.c"
