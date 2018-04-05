@@ -2,6 +2,8 @@
 
 
 
+#TODO use CMAKE_SIZE_UTIL and CMAKE_OBJCOPY
+
 macro(nRF5GenerateOtherArtifacts TARGET)
 
     # Build artifact will have no suffix unless we set it.  Not runnable on host.

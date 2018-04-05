@@ -13,6 +13,8 @@ More generic: support building libraries instead of just an executable.
 More generic: configurable for SDK version and Softdevice version.
 Easier to find where to make changes: each macro has a single concern.
 
+toolchain file derived from https://github.com/vpetrigo/arm-cmake-toolchains
+
 Lightly tested with:
      SDK 14.2
      NRF52832 and s132 version 5.0.1
@@ -28,6 +30,8 @@ Here, configuration is done not by setting vars, but by setting properties on ta
 Specifically, you set properties CHIP and SOFTDEVICE on a target foo, and then call nRF5ConfigTargetByProperties(foo).
 Thus in the same CMakeLists.txt, you can target both the 52832 chip and the 52810 chip.
 
+Also, these files do not configure the compiler executable explicitly, but use "toolchain files", see cmake docs about cross compiling.
+
 
 Example
 -
@@ -39,9 +43,17 @@ To build the example
      cd Examples
      mkdir build
      # regenerate the build system
-     cmake -H. -B"build"
+     cmake -H. -B"build" -DCMAKE_TOOLCHAIN_FILE=/home/bootch/git/nRF5Cmake/toolchain-gnu-arm.cmake -G "Ninja"
      # build
      cmake --build "build" --target Foo
+
+Or:
+
+     mkdir cmakeBuild
+     cd cmakeBuild
+     cmake -G "Ninja" -DCMAKE_TOOLCHAIN_FILE=/home/bootch/git/nRF5Cmake/toolchain-gnu-arm.cmake ..
+     cmake --build . --target Foo
+     
      
 
 The files in the example are the absolute minimum required for these scripts to produce a null executable.
