@@ -3,6 +3,9 @@
 # Require properties CHIP and SOFTDEVICE already set on target
 # Not setting global variable, setting properties on given target.
 
+# !!! Properties should mostly be PRIVATE (since PUBLIC properties would be visible to targets higher in build tree)
+# i.e. we are not communicating upwards usually.
+
 
 
 # TODO not exhaustive, and actually nrf51 is family but means 51422, etc.
@@ -10,7 +13,8 @@
 # TODO don't know if the 52810 defs are correct
 # Note the 52810 uses dev kit 52DK having 52832 as emulator
 
-# BOARD is hardcoded to the DK board
+# BOARD is not always set !!!!  Because this decision is separate, responsibility of user
+# Also, setting a board circularly defines the chip in some Nordic include files?
 
 # example makefiles for 52832 use DNRF52_PAN_74 and nothing else?  Most are for peripherals I am not interested in.
 
@@ -18,26 +22,27 @@ macro(nRF5SetTargetsCompileDefinitionsByChip TARGET CHIP )
     
     if (${CHIP} MATCHES "nrf51")
         set( RESULT 
-             -DBOARD_PCA10028 -DNRF51 -DNRF51422
+             -DNRF51 -DNRF51422 -DNRF51_SERIES
         )
     elseif (${CHIP} MATCHES "nrf52832_xxaa")
         set( RESULT 
-                -DNRF52832_XXAA -DNRF52_PAN_64 -DNRF52_PAN_12 -DNRF52_PAN_58 -DNRF52_PAN_54 -DNRF52_PAN_31 -DNRF52_PAN_51 -DNRF52_PAN_36 -DNRF52_PAN_15 -DNRF52_PAN_20 -DNRF52_PAN_55 -DBOARD_PCA10040
+                -DNRF52832_XXAA -DNRF52_SERIES -DNRF52_PAN_64 -DNRF52_PAN_12 -DNRF52_PAN_58 -DNRF52_PAN_54 -DNRF52_PAN_31 -DNRF52_PAN_51 -DNRF52_PAN_36 -DNRF52_PAN_15 -DNRF52_PAN_20 -DNRF52_PAN_55
         )
     elseif (${CHIP} MATCHES "nrf52810_xxaa")
         # TODO PAN
         set( RESULT 
-                -DNRF52810_XXAA -DBOARD_PCA10040
+                -DNRF52810_XXAA -DNRF52_SERIES
         )
     elseif (${CHIP} MATCHES "nrf52810e")
+        # !!! Emulation is specific to the NRF52DK board
         set( RESULT 
-                -DNRF52810_XXAA -DDEVELOP_IN_NRF52832 -DBOARD_PCA10040
+                -DNRF52810_XXAA -DNRF52_SERIES -DDEVELOP_IN_NRF52832 -DBOARD_PCA10040
         )
     else()
         message("???No compiler definitions specific to chip: ${CHIP}. ")
     endif()
 
-    target_compile_definitions( ${TARGET} PUBLIC ${RESULT} )
+    target_compile_definitions( ${TARGET} PRIVATE ${RESULT} )
     message("Target: ${TARGET} compiler defs for chip ${CHIP}: ${RESULT}")
 endmacro()
 
@@ -55,10 +60,10 @@ macro(nRF5SetTargetsCompileOptionsByChip TARGET CHIP )
     else()
         message("???No compiler options specific to family: ${CHIP}. ")
     endif()
-    target_compile_options( ${TARGET} PUBLIC ${RESULT} )
+    target_compile_options( ${TARGET} PRIVATE ${RESULT} )
 
     # TODO configurable
-    target_compile_options( ${TARGET} PUBLIC "-mfloat-abi=soft" )
+    target_compile_options( ${TARGET} PRIVATE "-mfloat-abi=soft" )
 
     # TODO message get compiler options from target
     message("Target: ${TARGET} compiler options for chip ${CHIP}: ${RESULT}")
@@ -81,6 +86,27 @@ macro(nRF5SetTargetsLinkerScript TARGET SCRIPT )
     # TODO message get compiler options from target
     message("Target ${TARGET} linker script: ${SCRIPT}")
 endmacro()
+
+
+# Check for common (Nordic) board defs in target_compile_definitions.
+# User responsible for target_compile_options(BOARD_<foo>)
+# These scripts do NOT set a BOARD definition
+macro( nRF5CheckTargetsBoardDefinitions TARGET )
+    get_target_property(targetCompileDefs ${TARGET} COMPILE_DEFINITIONS)
+    
+    set(BOARD BOARD_PCA10040)
+    list(FIND targetCompileDefs ${BOARD} result)
+    if (result LESS 0)
+        set(BOARD BOARD_PCA10028)
+	list(FIND targetCompileDefs ${BOARD} result)
+        if (result LESS 0)
+           # TODO search list regex "BOARD_.*"
+           set(BOARD "Unknown i.e. not a Nordic board")
+        endif()
+    endif()
+    message("Target ${TARGET} board: ${BOARD}")
+endmacro()
+
 
 
 #OBSOLETE
@@ -130,6 +156,8 @@ endfunction()
 
 macro(nRF5ConfigTargetByProperties TARGET)
 
+   # print blank line ahead of specs for target.  Each subroutine prints its specs
+   message("\nnRF5Cmake specs for target:  ${TARGET}")
    get_target_property(SD ${TARGET} SOFTDEVICE)
    nRF5SetSoftdeviceIncludePaths( ${TARGET} ${SD})
    nRF5SetSoftdeviceDefinitions( ${TARGET} ${SD})
@@ -137,6 +165,8 @@ macro(nRF5ConfigTargetByProperties TARGET)
    get_target_property(NRFCHIP ${TARGET} CHIP)
    nRF5SetTargetsCompileDefinitionsByChip(${TARGET} ${NRFCHIP})
    nRF5SetTargetsCompileOptionsByChip(${TARGET} ${NRFCHIP})
+
+   nRF5CheckTargetsBoardDefinitions(${TARGET})
 
    #TODO FLOAT_ABI, currently always soft
 
