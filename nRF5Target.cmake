@@ -43,7 +43,7 @@ macro(nRF5SetTargetsCompileDefinitionsByChip TARGET CHIP )
     endif()
 
     target_compile_definitions( ${TARGET} PRIVATE ${RESULT} )
-    message("Target: ${TARGET} compiler defs for chip ${CHIP}: ${RESULT}")
+    message("Target: ${TARGET}, chip: ${CHIP}, compiler defs: ${RESULT}")
 endmacro()
 
 
@@ -60,13 +60,15 @@ macro(nRF5SetTargetsCompileOptionsByChip TARGET CHIP )
     else()
         message("???No compiler options specific to family: ${CHIP}. ")
     endif()
+
+    # !!! Set on compiler and linker
     target_compile_options( ${TARGET} PRIVATE ${RESULT} )
+    target_link_libraries( ${TARGET} PRIVATE ${RESULT} )
 
     # TODO configurable
     target_compile_options( ${TARGET} PRIVATE "-mfloat-abi=soft" )
 
-    # TODO message get compiler options from target
-    message("Target: ${TARGET} compiler options for chip ${CHIP}: ${RESULT}")
+    message("Target: ${TARGET}, chip: ${CHIP}, compile options: ${RESULT}")
 endmacro()
 
 
@@ -84,7 +86,8 @@ macro(nRF5SetTargetsLinkerScript TARGET SCRIPT )
     #message("Linker script for ${TARGET}: ${TMP}")
 
     # TODO message get compiler options from target
-    message("Target ${TARGET} linker script: ${SCRIPT}")
+    
+    message("Target: ${TARGET}, linker script: ${SCRIPT}")
 endmacro()
 
 
@@ -104,7 +107,7 @@ macro( nRF5CheckTargetsBoardDefinitions TARGET )
            set(BOARD "Unknown i.e. not a Nordic board")
         endif()
     endif()
-    message("Target ${TARGET} board: ${BOARD}")
+    message("Target: ${TARGET}, board: ${BOARD}")
 endmacro()
 
 
@@ -169,6 +172,13 @@ macro(nRF5ConfigTargetByProperties TARGET)
    nRF5CheckTargetsBoardDefinitions(${TARGET})
 
    #TODO FLOAT_ABI, currently always soft
+
+   # message total properties, omitting CFLAGS not specific to target
+   get_target_property(VALUE ${TARGET} "COMPILE_OPTIONS")
+   message("Target: ${TARGET}, total COMPILE_OPTIONS: ${VALUE}")
+   get_target_property(VALUE ${TARGET} "LINK_LIBRARIES")
+   message("Target: ${TARGET}, total LINK_LIBRARIES: ${VALUE}")
+   message("!!! Other compile options not specific to target also exist, e.g. -mthumb")
 
    # We don't need a path to Softdevice hex to build target, only for target "FLASH_SOFTDEVICE"
 

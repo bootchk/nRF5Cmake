@@ -15,7 +15,8 @@ macro(nRF5GenerateOtherArtifacts TARGET)
     # link flags tell linker to generate a .map artifact
     #set_target_properties(${TARGET} PROPERTIES LINK_FLAGS "-Wl,-Map=${TARGET}.map")
     # in cmake, link options are set using target_link_libraries
-    target_link_libraries(${TARGET} INTERFACE "-Wl,-Map=${TARGET}.map")
+    target_link_libraries(${TARGET} PRIVATE "-Wl,-Map=${TARGET}.map")
+    # ??? the .map is created not alongside the .elf and .hex, but in parent directory
 
     # additional POST BUILD setps to create other file encodings ( .bin and .hex) files
     # since nrfjprog only takes a .hex

@@ -29,26 +29,54 @@ nRF5SetIncludePaths()
 # according to what you are building (library, or minimal executable, or BLE executable, or multiprotocol)
 nRF5SetSDKSourcesBasic()
 
+
+# Executable without Softdevice
 add_executable(Foo "")
 set_target_properties( Foo
     PROPERTIES
        CHIP "nrf52832_xxaa"
-       SOFTDEVICE "s132"
+       SOFTDEVICE "none"
        FLOAT_ABI "soft"
     )
 nRF5CheckTargetProperties(Foo)
 # Set paths and other definitions ON the executable target
 nRF5ConfigTargetByProperties(Foo)
 nRF5SetTargetStartupSources(Foo)
-nRF5SetTargetsLinkerScript(Foo "${CMAKE_SOURCE_DIR}/gcc_nrf52.ld")
+nRF5SetTargetsLinkerScript(Foo "${CMAKE_SOURCE_DIR}/gcc_nrf52_noSD.ld")
 
+# Note we use define no SDK sources here, but startup sources from SDK are already defined on target
 target_sources(Foo
+   PUBLIC
+      main.cpp
+   )
+
+
+# executable with Softdevice
+add_executable(FooSD "")
+set_target_properties( FooSD
+    PROPERTIES
+       CHIP "nrf52832_xxaa"
+       SOFTDEVICE "s132"
+       FLOAT_ABI "soft"
+    )
+nRF5CheckTargetProperties(FooSD)
+# Set paths and other definitions ON the executable target
+nRF5ConfigTargetByProperties(FooSD)
+nRF5SetTargetStartupSources(FooSD)
+nRF5SetTargetsLinkerScript(FooSD "${CMAKE_SOURCE_DIR}/gcc_nrf52_SD.ld")
+
+target_sources(FooSD
    PUBLIC
       main.cpp
       "${SDK_SOURCES}"
    )
 
+
 nRF5GenerateOtherArtifacts(Foo)
+nRF5GenerateOtherArtifacts(FooSD)
+
+
+
 nRF5AddCustomTargets(Foo)
 
 

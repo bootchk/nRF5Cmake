@@ -24,7 +24,7 @@ macro(nRF5SetSoftdeviceDefinitions TARGET SOFTDEVICE )
     endif()
 
     target_compile_definitions( ${TARGET} PUBLIC ${RESULT} )
-    message("Target ${TARGET} compiler defs for Softdevice ${SOFTDEVICE}: ${RESULT}")
+    message("Target: ${TARGET}, Softdevice: ${SOFTDEVICE}, compiler defs: ${RESULT}")
 endmacro()
 
 

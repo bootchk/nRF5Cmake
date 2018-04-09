@@ -51,7 +51,7 @@ macro(nRF5SetBuildOptions)
     # 98, 11, or 14
     set(CMAKE_CXX_STANDARD 14)
 
-    # OBSOLETE: now done in a "toolchain file"
+    # OBSOLETE: now done in a "toolchain file" because it plays better with add_subdirectory
     # configure cmake to use the arm-none-eabi-gcc
     #set(CMAKE_C_COMPILER "${ARM_NONE_EABI_TOOLCHAIN_PATH}/bin/arm-none-eabi-gcc")
     #set(CMAKE_CXX_COMPILER "${ARM_NONE_EABI_TOOLCHAIN_PATH}/bin/arm-none-eabi-c++")
@@ -60,6 +60,7 @@ macro(nRF5SetBuildOptions)
     # CPU_FLAGS and FPU_FLAGS are set on target properties
 
     # TODO optimization flags a var
+    # For really verbose compiling, add "-v" here
     set(COMMON_FLAGS "-MP -MD -mthumb -mabi=aapcs -Wall -Werror -O0 -g3 -ffunction-sections -fdata-sections -fno-strict-aliasing -fno-builtin --short-enums")
     # WAS also: ${CPU_FLAGS} ${FPU_FLAGS}")
 
@@ -70,14 +71,26 @@ macro(nRF5SetBuildOptions)
 
     # ORIGINALLY: set(CMAKE_EXE_LINKER_FLAGS "-mthumb -mabi=aapcs -std=gnu++98 -std=c99 -L ${NRF5_SDK_PATH}/components/toolchain/gcc -T${NRF5_LINKER_SCRIPT} ${CPU_FLAGS} ${FPU_FLAGS} -Wl,--gc-sections --specs=nano.specs -lc -lnosys -lm")
     # elided "-lc, -lnosys, -lm" => --specs=nosys.specs : I don't use libm and libc is redundant to nano.specs
+    # added -nodefaultlibs
     
-    # Note there is a path to default linker scripts, which generally are not useful
-    set(CMAKE_EXE_LINKER_FLAGS "-mthumb -mabi=aapcs -std=gnu++98 -std=c99 -L ${NRF5_SDK_PATH}/components/toolchain/gcc -Wl,--gc-sections --specs=nano.specs --specs=nosys.specs")
+    # Note path to linker scripts.  Default ones are not generally useful, but nrf52_common.ld is there, and most custom linker scripts include it.
+    # See elsewhere for setting linker script on target
+    set(LINK_SCRIPT_PATH ${NRF5_SDK_PATH}/components/toolchain/gcc)
+
+    # using specs=nosys.specs doesn't seem to work.  See "nosys.specs in newlib 2.20" seems to indicate bug
+    #set(CMAKE_EXE_LINKER_FLAGS "-mthumb -mabi=aapcs -std=gnu++98 -std=c99 -nodefaultlibs -L {LINK_SCRIPT_PATH}  -Wl,--gc-sections --specs=nano.specs --specs=nosys.specs")
+
+    #set(CMAKE_EXE_LINKER_FLAGS "-mthumb -mabi=aapcs -std=gnu++98 -std=c99 -nodefaultlibs -L ${LINK_SCRIPT_PATH} -Wl,--gc-sections --specs=nano.specs -lc -lnosys")
+    # w/o -std
+    set(CMAKE_EXE_LINKER_FLAGS "-mthumb -mabi=aapcs -nodefaultlibs -L ${LINK_SCRIPT_PATH} -Wl,--gc-sections --specs=nano.specs -lc -lnosys")
+
+    # Other linker artifacts (Map and other encodings such as hex) are specified elsewhere.  See nRF5CustomTargets.cmake, nRF5GenerateOtherArtifacts
 
     # note: we must override the default cmake linker flags so that CMAKE_C_FLAGS are not added implicitly
     # lkk: added LINK_LIBRARIES
     set(CMAKE_C_LINK_EXECUTABLE "${CMAKE_C_COMPILER} <LINK_FLAGS> <OBJECTS> -o <TARGET>")
-    set(CMAKE_CXX_LINK_EXECUTABLE "${CMAKE_C_COMPILER} <LINK_FLAGS> <OBJECTS> -lstdc++ -o <TARGET> <LINK_LIBRARIES>")
+    #set(CMAKE_CXX_LINK_EXECUTABLE "${CMAKE_C_COMPILER} <LINK_FLAGS> <OBJECTS> -lstdc++ -o <TARGET> <LINK_LIBRARIES>")
+    set(CMAKE_CXX_LINK_EXECUTABLE "${CMAKE_C_COMPILER} <LINK_FLAGS> <OBJECTS> -o <TARGET> <LINK_LIBRARIES>")
 
     # lkk hack?? to prevent -rdynamic
     SET(CMAKE_SHARED_LIBRARY_LINK_C_FLAGS "")

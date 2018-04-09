@@ -30,7 +30,9 @@ Here, configuration is done not by setting vars, but by setting properties on ta
 Specifically, you set properties CHIP and SOFTDEVICE on a target foo, and then call nRF5ConfigTargetByProperties(foo).
 Thus in the same CMakeLists.txt, you can target both the 52832 chip and the 52810 chip.
 
-Also, these files do not configure the compiler executable explicitly, but use "toolchain files", see cmake docs about cross compiling.
+Also, these files do not set the compiler executable explicitly, but use "toolchain files", see cmake docs about cross compiling.
+
+You must be careful to set proper flags on both stages of building: compilation and linking.  When cross building, both the compiler and linker require a "-mcpu=<foo>" option to know what code to generate (compiler) and e.g. what crt0.c files to link in (linker.)  There are many flags in common to the compiler and linker, and some not in common.
 
 
 Example
@@ -54,6 +56,10 @@ Or:
      cmake -G "Ninja" -DCMAKE_TOOLCHAIN_FILE=/home/bootch/git/nRF5Cmake/toolchain-gnu-arm.cmake ..
      cmake --build . --target Foo
      
+To get more verbose output, touch a source file and then:
+
+     cd cmakeBuild
+     ninja -v Foo
      
 
 The files in the example are the absolute minimum required for these scripts to produce a null executable.
@@ -71,7 +77,7 @@ Also see
 I am not recommending any of these, just pointing to other projects which use nrf5-sdk and cmake.
 
      the Nordic BLE Mesh project, which uses cmake.
-     mbed cmake
+     https://os.mbed.com/cookbook/mbed-cmake     mbed cmake
      https://github.com/Polidea/cmake-nRF5x.git
      https://github.com/ryankurte/nrf52-base.git
      https://github.com/Jumperr-labs/nrf5-sdk-clion.git

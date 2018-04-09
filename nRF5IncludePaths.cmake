@@ -62,7 +62,7 @@ endmacro()
 # This encapsulates knowledge of the SDK dir structure, which could change
 
 macro(nRF5SetSoftdeviceIncludePaths TARGET SOFTDEVICE )
-    message("SOFTDEVICE is ${SOFTDEVICE} ")
+    #message("SOFTDEVICE is ${SOFTDEVICE} ")
     if (${SOFTDEVICE} MATCHES "s132")
         set(RESULT
                 "${NRF5_SDK_PATH}/components/softdevice/s132/headers"
@@ -85,7 +85,7 @@ macro(nRF5SetSoftdeviceIncludePaths TARGET SOFTDEVICE )
         )
     endif()
 
-    message("Target ${TARGET} include path to SD ${SOFTDEVICE}: ${RESULT}")
+    message("Target: ${TARGET}, Softdevice: ${SOFTDEVICE}, include path: ${RESULT}")
     target_include_directories( ${TARGET} PUBLIC ${RESULT})
 endmacro()
 
