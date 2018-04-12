@@ -62,11 +62,13 @@ macro(nRF5SetBuildOptions)
     # TODO optimization flags a var
     # For really verbose compiling, add "-v" here
     set(COMMON_FLAGS "-MP -MD -mthumb -mabi=aapcs -Wall -Werror -O0 -g3 -ffunction-sections -fdata-sections -fno-strict-aliasing -fno-builtin --short-enums")
+    # append flags so c++ is lightweight
+    set(COMMON_CXX_FLAGS "-fno-exceptions -fno-rtti -fno-use-cxa-atexit -fno-threadsafe-statics")
     # WAS also: ${CPU_FLAGS} ${FPU_FLAGS}")
 
     # compiler/assambler/linker flags
     set(CMAKE_C_FLAGS "${COMMON_FLAGS}")
-    set(CMAKE_CXX_FLAGS "${COMMON_FLAGS}")
+    set(CMAKE_CXX_FLAGS "${COMMON_FLAGS} ${COMMON_CXX_FLAGS}")
     set(CMAKE_ASM_FLAGS "-MP -MD -std=c99 -x assembler-with-cpp")
 
     # ORIGINALLY: set(CMAKE_EXE_LINKER_FLAGS "-mthumb -mabi=aapcs -std=gnu++98 -std=c99 -L ${NRF5_SDK_PATH}/components/toolchain/gcc -T${NRF5_LINKER_SCRIPT} ${CPU_FLAGS} ${FPU_FLAGS} -Wl,--gc-sections --specs=nano.specs -lc -lnosys -lm")
@@ -83,14 +85,17 @@ macro(nRF5SetBuildOptions)
     #set(CMAKE_EXE_LINKER_FLAGS "-mthumb -mabi=aapcs -std=gnu++98 -std=c99 -nodefaultlibs -L ${LINK_SCRIPT_PATH} -Wl,--gc-sections --specs=nano.specs -lc -lnosys")
     # w/o -std
     set(CMAKE_EXE_LINKER_FLAGS "-mthumb -mabi=aapcs -nodefaultlibs -L ${LINK_SCRIPT_PATH} -Wl,--gc-sections --specs=nano.specs -lc -lnosys")
+    # --specs=nosys.specs
+    #set(CMAKE_EXE_LINKER_FLAGS "-mthumb -mabi=aapcs -nodefaultlibs -L ${LINK_SCRIPT_PATH} -Wl,--gc-sections --specs=nano.specs --specs=nosys.specs")
 
     # Other linker artifacts (Map and other encodings such as hex) are specified elsewhere.  See nRF5CustomTargets.cmake, nRF5GenerateOtherArtifacts
 
     # note: we must override the default cmake linker flags so that CMAKE_C_FLAGS are not added implicitly
     # lkk: added LINK_LIBRARIES
-    set(CMAKE_C_LINK_EXECUTABLE "${CMAKE_C_COMPILER} <LINK_FLAGS> <OBJECTS> -o <TARGET>")
+    #set(CMAKE_C_LINK_EXECUTABLE "${CMAKE_C_COMPILER} <LINK_FLAGS> <OBJECTS> -o <TARGET>")
     #set(CMAKE_CXX_LINK_EXECUTABLE "${CMAKE_C_COMPILER} <LINK_FLAGS> <OBJECTS> -lstdc++ -o <TARGET> <LINK_LIBRARIES>")
-    set(CMAKE_CXX_LINK_EXECUTABLE "${CMAKE_C_COMPILER} <LINK_FLAGS> <OBJECTS> -o <TARGET> <LINK_LIBRARIES>")
+    #set(CMAKE_CXX_LINK_EXECUTABLE "${CMAKE_C_COMPILER} <LINK_FLAGS> <OBJECTS> -o <TARGET> <LINK_LIBRARIES>")
+    #set(CMAKE_CXX_LINK_EXECUTABLE "${CMAKE_C_COMPILER} <LINK_FLAGS> <OBJECTS> -o <TARGET> <LINK_LIBRARIES>")
 
     # lkk hack?? to prevent -rdynamic
     SET(CMAKE_SHARED_LIBRARY_LINK_C_FLAGS "")
