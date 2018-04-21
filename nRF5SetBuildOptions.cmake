@@ -84,9 +84,9 @@ macro(nRF5SetBuildOptions)
 
     #set(CMAKE_EXE_LINKER_FLAGS "-mthumb -mabi=aapcs -std=gnu++98 -std=c99 -nodefaultlibs -L ${LINK_SCRIPT_PATH} -Wl,--gc-sections --specs=nano.specs -lc -lnosys")
     # w/o -std
-    set(CMAKE_EXE_LINKER_FLAGS "-mthumb -mabi=aapcs -nodefaultlibs -L ${LINK_SCRIPT_PATH} -Wl,--gc-sections --specs=nano.specs -lc -lnosys")
+    #set(CMAKE_EXE_LINKER_FLAGS "-mthumb -mabi=aapcs -nodefaultlibs -L ${LINK_SCRIPT_PATH} -Wl,--gc-sections --specs=nano.specs -lc -lnosys")
     # --specs=nosys.specs
-    #set(CMAKE_EXE_LINKER_FLAGS "-mthumb -mabi=aapcs -nodefaultlibs -L ${LINK_SCRIPT_PATH} -Wl,--gc-sections --specs=nano.specs --specs=nosys.specs")
+    set(CMAKE_EXE_LINKER_FLAGS "-mthumb -mabi=aapcs -nodefaultlibs -L ${LINK_SCRIPT_PATH} -Wl,--gc-sections --specs=nano.specs --specs=nosys.specs")
 
     # Other linker artifacts (Map and other encodings such as hex) are specified elsewhere.  See nRF5CustomTargets.cmake, nRF5GenerateOtherArtifacts
 

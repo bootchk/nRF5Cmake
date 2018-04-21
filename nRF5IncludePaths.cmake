@@ -4,6 +4,7 @@
 
 macro(nRF5SetIncludePaths)
     # basic board definitions and drivers
+    # TODO this is not exhaustive
     include_directories(
             "${NRF5_SDK_PATH}/components/boards"
             "${NRF5_SDK_PATH}/components/device"
@@ -15,6 +16,7 @@ macro(nRF5SetIncludePaths)
             "${NRF5_SDK_PATH}/components/drivers_nrf/clock"
             "${NRF5_SDK_PATH}/components/drivers_nrf/rtc"
             "${NRF5_SDK_PATH}/components/drivers_nrf/gpiote"
+            "${NRF5_SDK_PATH}/components/drivers_nrf/comp"
     )
 
     # toolchain specyfic
