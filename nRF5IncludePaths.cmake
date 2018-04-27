@@ -17,6 +17,7 @@ macro(nRF5SetIncludePaths)
             "${NRF5_SDK_PATH}/components/drivers_nrf/rtc"
             "${NRF5_SDK_PATH}/components/drivers_nrf/gpiote"
             "${NRF5_SDK_PATH}/components/drivers_nrf/comp"
+	    "${NRF5_SDK_PATH}/components/drivers_nrf"
     )
 
     # toolchain specyfic
